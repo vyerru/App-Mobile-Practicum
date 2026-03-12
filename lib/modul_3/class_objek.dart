@@ -1,5 +1,3 @@
-import 'dart:io';
-
 // class 
 // class Mahasiswa {
 //   String nama = 'Javier';
