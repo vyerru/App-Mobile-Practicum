@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:run/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
+import 'package:run/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart'; // Sesuaikan path
 
-class MahasiswaAktifCard extends StatefulWidget {
-  final MahasiswaAktifModel mahasiswa;
+class ModernMahasiswaAktifCard extends StatefulWidget {
+  final MahasiswaAktifModel mahasiswaAktif;
   final VoidCallback? onTap;
   final List<Color>? gradientColors;
 
-  const MahasiswaAktifCard({
+  const ModernMahasiswaAktifCard({
     Key? key,
-    required this.mahasiswa,
+    required this.mahasiswaAktif,
     this.onTap,
     this.gradientColors,
   }) : super(key: key);
 
   @override
-  State<MahasiswaAktifCard> createState() => _MahasiswaAktifCardState();
+  State<ModernMahasiswaAktifCard> createState() => _ModernMahasiswaAktifCardState();
 }
 
-class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
-    with SingleTickerProviderStateMixin {
+class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -41,21 +40,12 @@ class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
     super.dispose();
   }
 
-  Color _ipkColor(String ipk) {
-    final value = double.tryParse(ipk) ?? 0;
-    if (value >= 3.5) return Colors.green;
-    if (value >= 3.0) return Colors.orange;
-    return Colors.red;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final gradientColors = widget.gradientColors ??
-        [
-          Theme.of(context).primaryColor,
-          Theme.of(context).primaryColor.withOpacity(0.7),
-        ];
-    final ipkValue = double.tryParse(widget.mahasiswa.ipk) ?? 0;
+    final gradientColors = widget.gradientColors ?? [
+      Theme.of(context).primaryColor,
+      Theme.of(context).primaryColor.withOpacity(0.7),
+    ];
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
@@ -67,9 +57,13 @@ class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, gradientColors[0].withOpacity(0.05)],
+            ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -84,13 +78,14 @@ class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Avatar with Gradient
+                // Avatar Berupa Ikon Post/Dokumen
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -106,97 +101,56 @@ class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Text(
-                      widget.mahasiswa.nama.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.article_rounded,
+                      color: Colors.white,
+                      size: 24,
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                // Mahasiswa Aktif Information
+                const SizedBox(width: 16),
+                
+                // Informasi Title dan Body dari API Posts
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Title (Dibatasi 2 baris agar rapi)
                       Text(
-                        widget.mahasiswa.nama,
+                        widget.mahasiswaAktif.title.toUpperCase(),
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: -0.3,
+                          letterSpacing: -0.2,
+                          height: 1.2,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
-                      _buildInfoRow(Icons.badge_outlined,
-                          'NIM: ${widget.mahasiswa.nim}'),
-                      const SizedBox(height: 3),
-                      _buildInfoRow(Icons.class_outlined,
-                          'Kelas: ${widget.mahasiswa.kelas} • Angkatan ${widget.mahasiswa.angkatan}'),
-                      const SizedBox(height: 3),
-                      _buildInfoRow(Icons.school_outlined,
-                          '${widget.mahasiswa.jurusan} • Sem ${widget.mahasiswa.semester}'),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // IPK Badge
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _ipkColor(widget.mahasiswa.ipk).withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color:
-                              _ipkColor(widget.mahasiswa.ipk).withOpacity(0.3),
-                        ),
-                      ),
-                      child: Column(
+                      const SizedBox(height: 8),
+                      // Body / Deskripsi Post
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.mahasiswa.ipk,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: _ipkColor(widget.mahasiswa.ipk),
-                            ),
-                          ),
-                          Text(
-                            'IPK',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _ipkColor(widget.mahasiswa.ipk),
-                              fontWeight: FontWeight.w500,
+                          Icon(Icons.notes_rounded, size: 16, color: Colors.grey[500]),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              widget.mahasiswaAktif.body.replaceAll('\n', ' '),
+                              style: TextStyle(
+                                fontSize: 13, 
+                                color: Colors.grey[600],
+                                height: 1.4,
+                              ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    // IPK progress bar
-                    SizedBox(
-                      width: 44,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: ipkValue / 4.0,
-                          backgroundColor:
-                              _ipkColor(widget.mahasiswa.ipk).withOpacity(0.15),
-                          color: _ipkColor(widget.mahasiswa.ipk),
-                          minHeight: 5,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -205,72 +159,112 @@ class _MahasiswaAktifCardState extends State<MahasiswaAktifCard>
       ),
     );
   }
+}
 
-  Widget _buildInfoRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 12, color: Colors.grey[600]),
-        const SizedBox(width: 5),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+class MahasiswaAktifEmptyState extends StatelessWidget {
+  final VoidCallback? onRefresh;
+
+  const MahasiswaAktifEmptyState({Key? key, this.onRefresh}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.post_add_rounded,
+              size: 64,
+              color: Colors.grey[400],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 24),
+          Text(
+            'Tidak ada data aktivitas',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
+            ),
+          ),
+          if (onRefresh != null) ...[
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onRefresh,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh'),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
 
-// List view widget for mahasiswa aktif
 class MahasiswaAktifListView extends StatelessWidget {
-  final List<MahasiswaAktifModel> mahasiswaList;
-  final VoidCallback? onRefresh;
+  final List<MahasiswaAktifModel> mahasiswaAktifList;
+  final VoidCallback onRefresh;
 
   const MahasiswaAktifListView({
     Key? key,
-    required this.mahasiswaList,
-    this.onRefresh,
+    required this.mahasiswaAktifList,
+    required this.onRefresh,
   }) : super(key: key);
-
-  static const List<List<Color>> _gradients = [
-    [Color(0xFF4facfe), Color(0xFF00f2fe)], // Blue
-    [Color(0xFF43e97b), Color(0xFF38f9d7)], // Green
-    [Color(0xFF667eea), Color(0xFF764ba2)], // Purple
-    [Color(0xFFfa709a), Color(0xFFfee140)], // Coral
-    [Color(0xFF30cfd0), Color(0xFF667eea)], // Cyan
-  ];
 
   @override
   Widget build(BuildContext context) {
-    if (mahasiswaList.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_outline_rounded, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('Tidak ada mahasiswa aktif',
-                style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      );
+    if (mahasiswaAktifList.isEmpty) {
+      return MahasiswaAktifEmptyState(onRefresh: onRefresh);
     }
 
-    return RefreshIndicator(
-      onRefresh: () async => onRefresh?.call(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: mahasiswaList.length,
-        itemBuilder: (context, index) {
-          return MahasiswaAktifCard(
-            mahasiswa: mahasiswaList[index],
-            gradientColors: _gradients[index % _gradients.length],
-          );
-        },
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: mahasiswaAktifList.length,
+      itemBuilder: (context, index) {
+        final data = mahasiswaAktifList[index];
+        
+        // Variasi warna untuk card
+        final List<List<Color>> defaultGradients = [
+          [Colors.deepOrange, Colors.orangeAccent],
+          [Colors.blueGrey, Colors.grey],
+          [Colors.cyan, Colors.cyanAccent],
+          [Colors.deepPurple, Colors.purpleAccent],
+        ];
+        
+        final gradientColors = defaultGradients[index % defaultGradients.length];
+
+        return ModernMahasiswaAktifCard(
+          mahasiswaAktif: data,
+          gradientColors: gradientColors,
+          onTap: () {
+            // Memunculkan isi post lengkap saat di klik
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(data.title.toUpperCase()),
+                content: SingleChildScrollView(
+                  child: Text(
+                    data.body,
+                    style: const TextStyle(height: 1.5),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Tutup'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

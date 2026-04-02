@@ -1,58 +1,46 @@
+// import 'package:dio/dio.dart';
+// import 'package:run/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
+
+// class MahasiswaAktifRepository {
+//   final Dio _dio = Dio();
+
+//   Future<List<MahasiswaAktifModel>> getMahasiswaAktifList() async {
+//     try {
+//       final response = await _dio.get('https://jsonplaceholder.typicode.com/posts');
+      
+//       if (response.statusCode == 200) {
+//         final List<dynamic> data = response.data;
+//         return data.map((json) => MahasiswaAktifModel.fromJson(json)).toList();
+//       } else {
+//         throw Exception('Gagal memuat data mahasiswa aktif: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       throw Exception('Terjadi kesalahan Dio: $e');
+//     }
+//   }
+// }
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:run/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
 
 class MahasiswaAktifRepository {
-  /// Mendapatkan daftar mahasiswa aktif
   Future<List<MahasiswaAktifModel>> getMahasiswaAktifList() async {
-    // Simulasi network delay
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final response = await http.get(
+        Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+        headers: {'Accept': 'application/json'},
+      );
 
-    // Data dummy mahasiswa aktif
-    return [
-      MahasiswaAktifModel(
-        nama: 'Budi Santoso',
-        nim: '2021010001',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        ipk: '3.75',
-        angkatan: '2021',
-        kelas: 'D4TI-A',
-      ),
-      MahasiswaAktifModel(
-        nama: 'Siti Rahayu',
-        nim: '2021010002',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        ipk: '3.90',
-        angkatan: '2021',
-        kelas: 'D4TI-A',
-      ),
-      MahasiswaAktifModel(
-        nama: 'Ahmad Fauzi',
-        nim: '2021010003',
-        jurusan: 'Teknik Informatika',
-        semester: '4',
-        ipk: '3.50',
-        angkatan: '2022',
-        kelas: 'D4TI-B',
-      ),
-      MahasiswaAktifModel(
-        nama: 'Eko Prasetyo',
-        nim: '2022010005',
-        jurusan: 'Teknik Informatika',
-        semester: '2',
-        ipk: '3.20',
-        angkatan: '2023',
-        kelas: 'D4TI-A',
-      ),
-      MahasiswaAktifModel(
-        nama: 'Fitria Ningsih',
-        nim: '2021010006',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        ipk: '3.85',
-        angkatan: '2021',
-        kelas: 'D4TI-B',
-      ),
-    ];
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        
+        return data.map((json) => MahasiswaAktifModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Gagal memuat data mahasiswa aktif: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan HTTP: $e');
+    }
   }
 }

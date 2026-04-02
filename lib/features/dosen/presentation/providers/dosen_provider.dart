@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:run/features/dosen/data/models/dosen_model.dart'; // Sesuaikan
 import 'package:run/features/dosen/data/repositories/dosen_repository.dart'; // Sesuaikan
 

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart';
 import 'package:run/features/mahasiswa/data/repositories/mahasiswa_repository.dart';
 

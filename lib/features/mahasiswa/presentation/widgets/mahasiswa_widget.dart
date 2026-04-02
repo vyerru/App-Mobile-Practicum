@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart';
+import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart'; // Sesuaikan path jika perlu
 
-class MahasiswaCard extends StatefulWidget {
+class ModernMahasiswaCard extends StatefulWidget {
   final MahasiswaModel mahasiswa;
   final VoidCallback? onTap;
   final List<Color>? gradientColors;
 
-  const MahasiswaCard({
+  const ModernMahasiswaCard({
     Key? key,
     required this.mahasiswa,
     this.onTap,
@@ -14,11 +14,10 @@ class MahasiswaCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<MahasiswaCard> createState() => _MahasiswaCardState();
+  State<ModernMahasiswaCard> createState() => _ModernMahasiswaCardState();
 }
 
-class _MahasiswaCardState extends State<MahasiswaCard>
-    with SingleTickerProviderStateMixin {
+class _ModernMahasiswaCardState extends State<ModernMahasiswaCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -41,26 +40,13 @@ class _MahasiswaCardState extends State<MahasiswaCard>
     super.dispose();
   }
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'Aktif':
-        return Colors.green;
-      case 'Lulus':
-        return Colors.blue;
-      case 'Cuti':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final gradientColors = widget.gradientColors ??
-        [
-          Theme.of(context).primaryColor,
-          Theme.of(context).primaryColor.withOpacity(0.7),
-        ];
+    // Default gradient jika tidak diberikan
+    final gradientColors = widget.gradientColors ?? [
+      Theme.of(context).primaryColor,
+      Theme.of(context).primaryColor.withOpacity(0.7),
+    ];
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
@@ -72,9 +58,13 @@ class _MahasiswaCardState extends State<MahasiswaCard>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, gradientColors[0].withOpacity(0.05)],
+            ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -89,13 +79,14 @@ class _MahasiswaCardState extends State<MahasiswaCard>
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Avatar with Gradient
+                // Avatar Huruf Depan Nama
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -113,78 +104,58 @@ class _MahasiswaCardState extends State<MahasiswaCard>
                   ),
                   child: Center(
                     child: Text(
-                      widget.mahasiswa.nama.substring(0, 1).toUpperCase(),
+                      widget.mahasiswa.name.isNotEmpty 
+                          ? widget.mahasiswa.name.substring(0, 1).toUpperCase() 
+                          : 'M',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                // Mahasiswa Information
+                const SizedBox(width: 16),
+                
+                // Informasi Data dari API Comments
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        widget.mahasiswa.name,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.3,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      _buildInfoRow(Icons.email_outlined, widget.mahasiswa.email),
+                      const SizedBox(height: 6),
+                      // Body/Komentar (Dibatasi 2 baris agar UI tetap rapi)
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Icon(Icons.comment_outlined, size: 14, color: Colors.grey[600]),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              widget.mahasiswa.nama,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color:
-                                  _statusColor(widget.mahasiswa.status)
-                                      .withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              widget.mahasiswa.status,
+                              widget.mahasiswa.body.replaceAll('\n', ' '), // Menghapus enter bawaan API
                               style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: _statusColor(widget.mahasiswa.status),
+                                fontSize: 12, 
+                                color: Colors.grey[700],
+                                height: 1.3,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      _buildInfoRow(
-                          Icons.badge_outlined, 'NIM: ${widget.mahasiswa.nim}'),
-                      const SizedBox(height: 3),
-                      _buildInfoRow(
-                          Icons.email_outlined, widget.mahasiswa.email),
-                      const SizedBox(height: 3),
-                      _buildInfoRow(Icons.school_outlined,
-                          '${widget.mahasiswa.jurusan} • Sem ${widget.mahasiswa.semester}'),
                     ],
-                  ),
-                ),
-                // Arrow Icon
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: gradientColors[0].withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 14,
-                    color: gradientColors[0],
                   ),
                 ),
               ],
@@ -198,12 +169,12 @@ class _MahasiswaCardState extends State<MahasiswaCard>
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 12, color: Colors.grey[600]),
-        const SizedBox(width: 5),
+        Icon(icon, size: 14, color: Colors.grey[600]),
+        const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+            style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -213,54 +184,105 @@ class _MahasiswaCardState extends State<MahasiswaCard>
   }
 }
 
-// List view widget for mahasiswa
+class MahasiswaEmptyState extends StatelessWidget {
+  final VoidCallback? onRefresh;
+
+  const MahasiswaEmptyState({Key? key, this.onRefresh}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.school_outlined,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Tidak ada data mahasiswa',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
+            ),
+          ),
+          if (onRefresh != null) ...[
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onRefresh,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class MahasiswaListView extends StatelessWidget {
   final List<MahasiswaModel> mahasiswaList;
-  final VoidCallback? onRefresh;
+  final VoidCallback onRefresh;
 
   const MahasiswaListView({
     Key? key,
     required this.mahasiswaList,
-    this.onRefresh,
+    required this.onRefresh,
   }) : super(key: key);
-
-  static const List<List<Color>> _gradients = [
-    [Color(0xFF667eea), Color(0xFF764ba2)], // Purple
-    [Color(0xFFf093fb), Color(0xFFf5576c)], // Pink
-    [Color(0xFF4facfe), Color(0xFF00f2fe)], // Blue
-    [Color(0xFF43e97b), Color(0xFF38f9d7)], // Green
-    [Color(0xFFfa709a), Color(0xFFfee140)], // Coral
-    [Color(0xFF30cfd0), Color(0xFF667eea)], // Cyan
-  ];
 
   @override
   Widget build(BuildContext context) {
     if (mahasiswaList.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.school_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('Tidak ada data mahasiswa',
-                style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      );
+      return MahasiswaEmptyState(onRefresh: onRefresh);
     }
 
-    return RefreshIndicator(
-      onRefresh: () async => onRefresh?.call(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: mahasiswaList.length,
-        itemBuilder: (context, index) {
-          return MahasiswaCard(
-            mahasiswa: mahasiswaList[index],
-            gradientColors: _gradients[index % _gradients.length],
-          );
-        },
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: mahasiswaList.length,
+      itemBuilder: (context, index) {
+        final mahasiswa = mahasiswaList[index];
+        
+        // Variasi warna seperti pada dosen
+        final List<List<Color>> defaultGradients = [
+          [Colors.indigo, Colors.indigoAccent],
+          [Colors.pink, Colors.pinkAccent],
+          [Colors.green, Colors.greenAccent],
+          [Colors.orange, Colors.orangeAccent],
+        ];
+        
+        final gradientColors = defaultGradients[index % defaultGradients.length];
+
+        return ModernMahasiswaCard(
+          mahasiswa: mahasiswa,
+          gradientColors: gradientColors,
+          onTap: () {
+            // Tampilkan body secara penuh saat card diklik
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(mahasiswa.name),
+                content: Text(mahasiswa.body),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Tutup'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

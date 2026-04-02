@@ -1,61 +1,45 @@
-import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart';
+// import 'package:dio/dio.dart';
+// import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart';
+
+// class MahasiswaRepository {
+//   final Dio _dio = Dio();
+
+//   Future<List<MahasiswaModel>> getMahasiswaList() async {
+//     try {
+//       final response = await _dio.get('https://jsonplaceholder.typicode.com/comments');
+      
+//       if (response.statusCode == 200) {
+//         final List<dynamic> data = response.data;
+//         return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+//       } else {
+//         throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       throw Exception('Terjadi kesalahan Dio: $e');
+//     }
+//   }
+// }
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:run/features/mahasiswa/data/models/mahasiswa_model.dart'; 
 
 class MahasiswaRepository {
-  /// Mendapatkan daftar mahasiswa
   Future<List<MahasiswaModel>> getMahasiswaList() async {
-    // Simulasi network delay
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final response = await http.get(
+        Uri.parse('https://jsonplaceholder.typicode.com/comments'),
+        headers: {'Accept': 'application/json'},
+      );
 
-    // Data dummy mahasiswa
-    return [
-      MahasiswaModel(
-        nama: 'Budi Santoso',
-        nim: '2021010001',
-        email: 'budi.santoso@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        status: 'Aktif',
-      ),
-      MahasiswaModel(
-        nama: 'Siti Rahayu',
-        nim: '2021010002',
-        email: 'siti.rahayu@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        status: 'Aktif',
-      ),
-      MahasiswaModel(
-        nama: 'Ahmad Fauzi',
-        nim: '2021010003',
-        email: 'ahmad.fauzi@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '4',
-        status: 'Aktif',
-      ),
-      MahasiswaModel(
-        nama: 'Dewi Lestari',
-        nim: '2020010004',
-        email: 'dewi.lestari@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '8',
-        status: 'Lulus',
-      ),
-      MahasiswaModel(
-        nama: 'Eko Prasetyo',
-        nim: '2022010005',
-        email: 'eko.prasetyo@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '2',
-        status: 'Aktif',
-      ),
-      MahasiswaModel(
-        nama: 'Fitria Ningsih',
-        nim: '2021010006',
-        email: 'fitria.ningsih@student.example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-        status: 'Aktif',
-      ),
-    ];
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan HTTP: $e');
+    }
   }
 }

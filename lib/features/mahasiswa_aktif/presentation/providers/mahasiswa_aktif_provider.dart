@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:run/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
 import 'package:run/features/mahasiswa_aktif/data/repositories/mahasiswa_aktif_repository.dart';
 
